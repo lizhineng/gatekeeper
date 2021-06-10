@@ -1,6 +1,6 @@
 {
     "name": "lizhineng/gatekeeper",
-    "description": "Role-based access control in Laravel.",
+    "description": "Role-based access control for Laravel.",
     "type": "library",
     "require": {
         "php": "^8.0",

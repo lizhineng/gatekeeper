@@ -9,9 +9,9 @@ class RoleTest extends FeatureTest
 {
     public function tests_assigns_permission_to_role()
     {
-        $readPosts = Permission::make(['name' => 'read:posts']);
+        $readPosts = Permission::create(['name' => 'read:posts']);
 
-        $editor = Role::make(['name' => 'editor']);
+        $editor = Role::create(['name' => 'editor']);
         $this->assertFalse($editor->allows($readPosts));
 
         $editor->assignPermission($readPosts);
@@ -20,8 +20,8 @@ class RoleTest extends FeatureTest
 
     public function test_removes_permission_from_role()
     {
-        $readPosts = Permission::make(['name' => 'read:posts']);
-        $editor = Role::make(['name' => 'editor']);
+        $readPosts = Permission::create(['name' => 'read:posts']);
+        $editor = Role::create(['name' => 'editor']);
 
         $editor->assignPermission($readPosts);
         $editor->removePermission($readPosts);

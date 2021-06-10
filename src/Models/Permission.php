@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
 {
-    protected $fillable = ['name'];
+    protected $guarded = [];
 
-    public static function make(array $attributes): static
+    public static function create(array $attributes): static
     {
         return tap((new static($attributes)))->save();
     }

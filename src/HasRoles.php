@@ -42,8 +42,17 @@ trait HasRoles
         return $this->roles->contains($role);
     }
 
-    public function allows(Permission $permission): bool
+    public function allows(Permission|string $permission): bool
     {
-        return $this->roles->intersect($permission->roles)->isNotEmpty();
+        if (is_string($permission)) {
+            $permission = $this->manager()->permission($permission);
+        }
+
+        return $permission->roles->intersect($this->roles)->isNotEmpty();
+    }
+
+    protected function manager(): Manager
+    {
+        return Manager::getInstance();
     }
 }

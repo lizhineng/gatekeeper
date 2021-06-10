@@ -11,8 +11,8 @@ class PermissionScopeTest extends FeatureTest
 {
     public function test_scopes_user_by_permission()
     {
-        $editor = Role::make(['name' => 'editor']);
-        $readPosts = Permission::make(['name' => 'read:posts']);
+        $editor = Role::create(['name' => 'editor']);
+        $readPosts = Permission::create(['name' => 'read:posts']);
         $editor->assignPermission($readPosts);
 
         $user1 = $this->makeUser()->assignRole($editor);

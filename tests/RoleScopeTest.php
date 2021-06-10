@@ -10,7 +10,7 @@ class RoleScopeTest extends FeatureTest
 {
     public function test_scopes_users_by_role()
     {
-        $editor = Role::make(['name' => 'editor']);
+        $editor = Role::create(['name' => 'editor']);
         $user1 = $this->makeUser()->assignRole($editor);
         $user2 = $this->makeUser();
 
