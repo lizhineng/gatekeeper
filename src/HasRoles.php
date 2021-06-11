@@ -51,6 +51,11 @@ trait HasRoles
         return $permission->roles->intersect($this->roles)->isNotEmpty();
     }
 
+    public function allowsAny(array $permissions): bool
+    {
+        return collect($permissions)->contains(fn ($permission) => $this->allows($permission));
+    }
+
     protected function manager(): Manager
     {
         return Manager::getInstance();

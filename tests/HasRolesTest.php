@@ -52,4 +52,13 @@ class HasRolesTest extends FeatureTest
         $this->expectExceptionMessage("Failed to retrieve the permission by given name [foo].");
         $this->makeUser()->allows('foo');
     }
+
+    public function test_checks_user_has_any_permissions()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+        $writePosts = Permission::create(['name' => 'write:posts']);
+        $editor = Role::create(['name' => 'editor'])->assignPermission($readPosts);
+        $user = $this->makeUser()->assignRole($editor);
+        $this->assertTrue($user->allowsAny([$readPosts, $writePosts]));
+    }
 }
