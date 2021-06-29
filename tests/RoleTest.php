@@ -7,7 +7,7 @@ use Zhineng\Gatekeeper\Models\Role;
 
 class RoleTest extends FeatureTest
 {
-    public function tests_assigns_permission_to_role()
+    public function test_assigns_permission_to_role()
     {
         $readPosts = Permission::create(['name' => 'read:posts']);
 
