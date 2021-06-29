@@ -22,4 +22,11 @@ class PermissionScopeTest extends FeatureTest
         $this->assertTrue($users->contains($user1));
         $this->assertFalse($users->contains($user2));
     }
+
+    public function test_scopes_users_by_permission_name()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+
+        $this->assertInstanceOf(Collection::class, User::permission($readPosts->name)->get());
+    }
 }

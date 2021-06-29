@@ -18,6 +18,28 @@ class RoleTest extends FeatureTest
         $this->assertTrue($editor->fresh()->allows($readPosts));
     }
 
+    public function test_assigns_permission_to_role_by_scope()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+
+        $editor = Role::create(['name' => 'editor']);
+        $this->assertFalse($editor->allows($readPosts));
+
+        $editor->assignPermission($readPosts->name);
+        $this->assertTrue($editor->fresh()->allows($readPosts));
+    }
+
+    public function test_assigns_multiple_permissions_to_role()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+        $writePosts = Permission::create(['name' => 'write:posts']);
+
+        $editor = Role::create(['name' => 'editor']);
+        $editor->assignPermission([$readPosts, $writePosts->name]);
+        $this->assertTrue($editor->fresh()->allows($readPosts));
+        $this->assertTrue($editor->fresh()->allows($writePosts));
+    }
+
     public function test_removes_permission_from_role()
     {
         $readPosts = Permission::create(['name' => 'read:posts']);

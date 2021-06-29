@@ -18,8 +18,12 @@ trait HasRoles
         return $query->whereHas('roles', fn ($query) => $query->whereKey($role->getKey()));
     }
 
-    public function scopePermission(Builder $query, Permission $permission): Builder
+    public function scopePermission(Builder $query, Permission|string $permission): Builder
     {
+        if (is_string($permission)) {
+            $permission = $this->manager()->permission($permission);
+        }
+
         return $query->whereHas('roles', fn ($query) => $query->whereKey($permission->roles->pluck('id')));
     }
 
