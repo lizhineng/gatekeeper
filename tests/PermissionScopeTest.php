@@ -9,7 +9,7 @@ use Zhineng\Gatekeeper\Tests\Fixtures\User;
 
 class PermissionScopeTest extends FeatureTest
 {
-    public function test_scopes_user_by_permission()
+    public function test_scopes_users_by_permission()
     {
         $editor = Role::create(['name' => 'editor']);
         $readPosts = Permission::create(['name' => 'read:posts']);
