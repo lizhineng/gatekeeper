@@ -7,13 +7,18 @@ require __DIR__.'/../migrations/create_gatekeeper_tables.php';
 use CreateGatekeeperTables;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\TestCase;
 use Zhineng\Gatekeeper\Tests\Fixtures\User;
 
 abstract class FeatureTest extends TestCase
 {
+    protected static Dispatcher|null $dispatcher = null;
+
     public function setUp(): void
     {
         $this->registerContainer();
@@ -29,16 +34,16 @@ abstract class FeatureTest extends TestCase
 
     protected function registerContainer(): void
     {
-        Container::setInstance($container = new Container);
+        $container = Container::setInstance(new Container);
 
-        Schema::setFacadeApplication($container);
+        Facade::setFacadeApplication($container);
     }
 
     protected function registerDatabase(): void
     {
         $container = Container::getInstance();
 
-        $db = new Manager;
+        $db = new Manager($container);
 
         $container->bind('db', fn () => $db);
 
@@ -49,6 +54,10 @@ abstract class FeatureTest extends TestCase
 
         $db->bootEloquent();
         $db->setAsGlobal();
+
+        $db->connection()->setEventDispatcher($this->dispatcher());
+
+        Model::setEventDispatcher($this->dispatcher());
     }
 
     protected function migrate(): void
@@ -62,5 +71,14 @@ abstract class FeatureTest extends TestCase
             $table->id();
             $table->timestamps();
         });
+    }
+
+    protected function dispatcher(): Dispatcher
+    {
+        if (static::$dispatcher) {
+            return static::$dispatcher;
+        }
+
+        return static::$dispatcher = new Dispatcher(Container::getInstance());
     }
 }

@@ -3,14 +3,17 @@
 namespace Zhineng\Gatekeeper\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Zhineng\Gatekeeper\Manager;
 
 class Permission extends Model
 {
     protected $guarded = [];
 
-    public static function create(array $attributes): static
+    protected static function booted()
     {
-        return tap((new static($attributes)))->save();
+        static::saved(function ($model) {
+            Manager::getInstance()->flushCache();
+        });
     }
 
     public function roles()

@@ -9,11 +9,6 @@ class Role extends Model
 {
     protected $guarded = [];
 
-    public static function create(array $attributes): static
-    {
-        return tap((new static($attributes)))->save();
-    }
-
     public function permissions()
     {
         return $this->morphToMany(Permission::class, 'assignable', 'assigned_permissions');
