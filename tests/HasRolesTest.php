@@ -2,7 +2,7 @@
 
 namespace Zhineng\Gatekeeper\Tests;
 
-use Zhineng\Gatekeeper\Exceptions\FailedToFindPermission;
+use Zhineng\Gatekeeper\Exceptions\CouldNotFindPermission;
 use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
 
@@ -48,8 +48,8 @@ class HasRolesTest extends FeatureTest
 
     public function test_expects_exception_when_checking_with_not_exists_permission_scope()
     {
-        $this->expectException(FailedToFindPermission::class);
-        $this->expectExceptionMessage("Failed to retrieve the permission by given name [foo].");
+        $this->expectException(CouldNotFindPermission::class);
+        $this->expectExceptionMessage("Could not retrieve the permission by given name [foo].");
         $this->makeUser()->allows('foo');
     }
 

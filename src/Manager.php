@@ -4,7 +4,7 @@ namespace Zhineng\Gatekeeper;
 
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\Eloquent\Collection;
-use Zhineng\Gatekeeper\Exceptions\FailedToFindPermission;
+use Zhineng\Gatekeeper\Exceptions\CouldNotFindPermission;
 use Zhineng\Gatekeeper\Models\Permission;
 
 class Manager
@@ -30,7 +30,7 @@ class Manager
     public function permission(Permission|string $permission): Permission
     {
         if (is_string($permission)) {
-            return $this->permissions()->firstWhere('name', $permission)?: throw FailedToFindPermission::byName($permission);
+            return $this->permissions()->firstWhere('name', $permission)?: throw CouldNotFindPermission::byName($permission);
         }
 
         return $permission;

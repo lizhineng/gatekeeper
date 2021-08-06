@@ -4,10 +4,10 @@ namespace Zhineng\Gatekeeper\Exceptions;
 
 use Exception;
 
-class FailedToFindPermission extends Exception
+class CouldNotFindPermission extends Exception
 {
     public static function byName(string $name): static
     {
-        return new static("Failed to retrieve the permission by given name [$name].");
+        return new static("Could not retrieve the permission by given name [$name].");
     }
 }
