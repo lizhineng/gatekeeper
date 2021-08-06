@@ -3,7 +3,6 @@
 namespace Zhineng\Gatekeeper\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Zhineng\Gatekeeper\Manager;
 
 class Role extends Model
 {
@@ -14,23 +13,20 @@ class Role extends Model
         return $this->morphToMany(Permission::class, 'assignable', 'assigned_permissions');
     }
 
-    public function assignPermission(Permission|array|string $permissions): self
+    public function assignPermission(Permission|iterable|string $permissions): self
     {
-        if (is_array($permissions)) {
-            $permissions = collect($permissions)
-                ->map(fn ($permission) => $this->manager()->permission($permission)->getKey());
-        } elseif (is_string($permissions)) {
-            $permissions = $this->manager()->permission($permissions);
-        }
+        $permissions = Permission::normalize($permissions);
 
         $this->permissions()->attach($permissions);
 
         return $this;
     }
 
-    public function removePermission(Permission $permission): self
+    public function removePermission(Permission|iterable|string $permissions): self
     {
-        $this->permissions()->detach($permission);
+        $permissions = Permission::normalize($permissions);
+
+        $this->permissions()->detach($permissions);
 
         return $this;
     }
@@ -40,8 +36,8 @@ class Role extends Model
         return $this->permissions->contains($permission);
     }
 
-    protected function manager(): Manager
+    public function allowsAny(array $permissions): bool
     {
-        return Manager::getInstance();
+        return collect($permissions)->some(fn ($permission) => $this->allows($permission));
     }
 }

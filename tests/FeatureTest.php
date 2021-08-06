@@ -13,16 +13,20 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\TestCase;
+use Zhineng\Gatekeeper\Manager as Gatekeeper;
 use Zhineng\Gatekeeper\Tests\Fixtures\User;
 
 abstract class FeatureTest extends TestCase
 {
-    protected static Dispatcher|null $dispatcher = null;
+    protected static ?Dispatcher $dispatcher = null;
+
+    protected ?Gatekeeper $gatekeeper = null;
 
     public function setUp(): void
     {
         $this->registerContainer();
         $this->registerDatabase();
+        $this->registerGatekeeper();
         $this->migrate();
         $this->migrateForTesting();
     }
@@ -55,9 +59,17 @@ abstract class FeatureTest extends TestCase
         $db->bootEloquent();
         $db->setAsGlobal();
 
-        $db->connection()->setEventDispatcher($this->dispatcher());
-
         Model::setEventDispatcher($this->dispatcher());
+    }
+
+    protected function registerGatekeeper()
+    {
+        if ($this->gatekeeper) {
+            return $this->gatekeeper;
+        }
+
+        $this->gatekeeper = new Gatekeeper;
+        $this->gatekeeper->bootEloquent();
     }
 
     protected function migrate(): void

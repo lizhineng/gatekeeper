@@ -21,7 +21,7 @@ trait HasRoles
     public function scopePermission(Builder $query, Permission|string $permission): Builder
     {
         if (is_string($permission)) {
-            $permission = $this->manager()->permission($permission);
+            $permission = Permission::gatekeeper()->permission($permission);
         }
 
         return $query->whereHas('roles', fn ($query) => $query->whereKey($permission->roles->pluck('id')));
@@ -49,7 +49,7 @@ trait HasRoles
     public function allows(Permission|string $permission): bool
     {
         if (is_string($permission)) {
-            $permission = $this->manager()->permission($permission);
+            $permission = Permission::gatekeeper()->permission($permission);
         }
 
         return $permission->roles->intersect($this->roles)->isNotEmpty();
@@ -57,11 +57,6 @@ trait HasRoles
 
     public function allowsAny(array $permissions): bool
     {
-        return collect($permissions)->contains(fn ($permission) => $this->allows($permission));
-    }
-
-    protected function manager(): Manager
-    {
-        return Manager::getInstance();
+        return collect($permissions)->some(fn ($permission) => $this->allows($permission));
     }
 }

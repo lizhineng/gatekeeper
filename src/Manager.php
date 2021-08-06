@@ -6,25 +6,19 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\Eloquent\Collection;
 use Zhineng\Gatekeeper\Exceptions\CouldNotFindPermission;
 use Zhineng\Gatekeeper\Models\Permission;
+use Zhineng\Gatekeeper\Models\Role;
 
 class Manager
 {
-    protected static ?Manager $instance = null;
-
     protected ?Repository $cache = null;
 
-    public static function getInstance(): Manager
-    {
-        if (is_null(static::$instance)) {
-            static::$instance = new static;
-        }
+    protected static string $permissionModel = Permission::class;
 
-        return static::$instance;
-    }
+    protected static string $roleModel = Role::class;
 
-    public static function setInstance(Manager $manager): void
+    public function bootEloquent()
     {
-        static::$instance = $manager;
+        static::$permissionModel::setGatekeeper($this);
     }
 
     public function permission(Permission|string $permission): Permission
@@ -40,11 +34,11 @@ class Manager
     {
         if ($this->hasCache()) {
             return $this->cache()->remember($this->cacheKey(), $seconds = 60 * 60 * 24, function () {
-                return Permission::with('roles')->get();
+                return static::$permissionModel::with('roles')->get();
             });
         }
 
-        return Permission::with('roles')->get();
+        return static::$permissionModel::with('roles')->get();
     }
 
     public function cache(): ?Repository
@@ -54,7 +48,7 @@ class Manager
 
     public function hasCache(): bool
     {
-        return ! is_null($this->cache);
+        return ! is_null($this->cache());
     }
 
     public function cacheUsing(Repository $cache): self
@@ -64,9 +58,11 @@ class Manager
         return $this;
     }
 
-    public function flushCache(): void
+    public function withoutCache(): self
     {
-        $this->cache()->forget($this->cacheKey());
+        $this->cache = null;
+
+        return $this;
     }
 
     public function cacheKey(): string
