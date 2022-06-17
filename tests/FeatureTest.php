@@ -50,6 +50,7 @@ abstract class FeatureTest extends TestCase
         $db = new Manager($container);
 
         $container->bind('db', fn () => $db);
+        $container->bind('db.schema', fn () => $db->connection()->getSchemaBuilder());
 
         $db->addConnection([
             'driver' => 'sqlite',
@@ -65,7 +66,7 @@ abstract class FeatureTest extends TestCase
     protected function registerGatekeeper()
     {
         if ($this->gatekeeper) {
-            return $this->gatekeeper;
+            return;
         }
 
         $this->gatekeeper = new Gatekeeper;
