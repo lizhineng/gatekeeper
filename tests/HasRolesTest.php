@@ -8,15 +8,18 @@ use Zhineng\Gatekeeper\Models\Role;
 
 class HasRolesTest extends FeatureTest
 {
-    public function test_assigns_role_to_user()
+    /**
+     * @dataProvider provides_roles
+     */
+    public function test_assigns_role_to_user($getRoles)
     {
-        $editor = Role::create(['name' => 'editor']);
+        $roles = $getRoles();
 
         $user = $this->makeUser();
-        $this->assertFalse($user->hasRole($editor));
+        $this->assertFalse($user->hasRole($roles));
 
-        $user->assignRole($editor);
-        $this->assertTrue($user->fresh()->hasRole($editor));
+        $user->assignRole($roles);
+        $this->assertTrue($user->fresh()->hasRole($roles));
     }
 
     public function test_removes_user_from_role()
@@ -60,5 +63,14 @@ class HasRolesTest extends FeatureTest
         $editor = Role::create(['name' => 'editor'])->assignPermission($readPosts);
         $user = $this->makeUser()->assignRole($editor);
         $this->assertTrue($user->allowsAny([$readPosts, $writePosts]));
+    }
+
+    public function provides_roles()
+    {
+        return [
+            'role model' => [
+                fn () => Role::create(['name' => 'editor']),
+            ],
+        ];
     }
 }
