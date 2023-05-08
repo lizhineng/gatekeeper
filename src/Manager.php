@@ -12,13 +12,69 @@ class Manager
 {
     protected ?Repository $cache = null;
 
-    protected static string $permissionModel = Permission::class;
+    /**
+     * The underlying permission model.
+     *
+     * @var class-string
+     */
+    protected string $permissionModel = Permission::class;
 
-    protected static string $roleModel = Role::class;
+    /**
+     * The underlying role model.
+     *
+     * @var class-string
+     */
+    protected string $roleModel = Role::class;
+
+    /**
+     * Configure permission model.
+     *
+     * @param  class-string  $model
+     * @return $this
+     */
+    public function permissionUsing(string $model): self
+    {
+        $this->permissionModel = $model;
+
+        return $this;
+    }
+
+    /**
+     * Configure role model.
+     *
+     * @param  class-string  $model
+     * @return $this
+     */
+    public function roleUsing(string $model): self
+    {
+        $this->roleModel = $model;
+
+        return $this;
+    }
+
+    /**
+     * Retrieve underlying permission model.
+     *
+     * @return class-string
+     */
+    public function permissionModel(): string
+    {
+        return $this->permissionModel;
+    }
+
+    /**
+     * Retrieve underlying role model.
+     *
+     * @return class-string
+     */
+    public function roleModel(): string
+    {
+        return $this->roleModel;
+    }
 
     public function bootEloquent()
     {
-        static::$permissionModel::setGatekeeper($this);
+        $this->permissionModel()::setGatekeeper($this);
     }
 
     public function permission(Permission|string $permission): Permission
@@ -34,11 +90,11 @@ class Manager
     {
         if ($this->hasCache()) {
             return $this->cache()->remember($this->cacheKey(), $seconds = 60 * 60 * 24, function () {
-                return static::$permissionModel::with('roles')->get();
+                return $this->permissionModel()::with('roles')->get();
             });
         }
 
-        return static::$permissionModel::with('roles')->get();
+        return $this->permissionModel()::with('roles')->get();
     }
 
     public function cache(): ?Repository
