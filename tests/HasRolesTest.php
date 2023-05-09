@@ -46,6 +46,13 @@ class HasRolesTest extends FeatureTest
         $this->assertFalse($user->fresh()->hasRole($roles));
     }
 
+    public function test_removes_not_exists_role_from_user()
+    {
+        $this->expectException(CouldNotFindRole::class);
+        $this->expectExceptionMessage("Could not retrieve the role by given name [foo].");
+        $this->makeUser()->removeRole('foo');
+    }
+
     public function test_checks_user_permission()
     {
         $readPosts = Permission::create(['name' => 'read:posts']);
