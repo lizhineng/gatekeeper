@@ -3,6 +3,7 @@
 namespace Zhineng\Gatekeeper;
 
 use Illuminate\Database\Eloquent\Builder;
+use Zhineng\Gatekeeper\Exceptions\CouldNotFindRole;
 use Zhineng\Gatekeeper\Facades\Gatekeeper;
 use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
@@ -31,7 +32,7 @@ trait HasRoles
     public function assignRole(Role|string $role): self
     {
         if (is_string($role)) {
-            $role = Gatekeeper::roleModel()::where('name', $role)->first();
+            $role = Gatekeeper::roleModel()::where('name', $role)->first() ?: throw CouldNotFindRole::byName($role);
         }
 
         $this->roles()->attach($role);

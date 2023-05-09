@@ -3,6 +3,7 @@
 namespace Zhineng\Gatekeeper\Tests;
 
 use Zhineng\Gatekeeper\Exceptions\CouldNotFindPermission;
+use Zhineng\Gatekeeper\Exceptions\CouldNotFindRole;
 use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
 
@@ -20,6 +21,13 @@ class HasRolesTest extends FeatureTest
 
         $user->assignRole($roles);
         $this->assertTrue($user->fresh()->hasRole($roles));
+    }
+
+    public function test_assigns_not_exists_role_to_user()
+    {
+        $this->expectException(CouldNotFindRole::class);
+        $this->expectExceptionMessage("Could not retrieve the role by given name [foo].");
+        $this->makeUser()->assignRole('foo');
     }
 
     public function test_removes_user_from_role()
