@@ -29,13 +29,28 @@ trait HasRoles
         return $query->whereHas('roles', fn ($query) => $query->whereKey($permission->roles->pluck('id')));
     }
 
-    public function assignRole(Role|string $role): self
+    /**
+     * Assign roles to the entity.
+     *
+     * @param  Role|iterable|string  $roles
+     * @return $this
+     * @throws CouldNotFindRole
+     */
+    public function assignRole(Role|iterable|string $roles): self
     {
-        if (is_string($role)) {
-            $role = Gatekeeper::roleModel()::where('name', $role)->first() ?: throw CouldNotFindRole::byName($role);
+        $roles = is_iterable($roles) ? $roles: [$roles];
+
+        $ids = [];
+
+        foreach ($roles as $role) {
+            if (is_string($role)) {
+                $role = Gatekeeper::roleModel()::where('name', $role)->first() ?: throw CouldNotFindRole::byName($role);
+            }
+
+            $ids[] = $role->getKey();
         }
 
-        $this->roles()->attach($role);
+        $this->roles()->attach($ids);
 
         return $this;
     }
@@ -47,13 +62,40 @@ trait HasRoles
         return $this;
     }
 
-    public function hasRole(Role|string $role): bool
+    /**
+     * Determine if the user has the given role.
+     *
+     * @param  Role|iterable|string  $role
+     * @return bool
+     */
+    public function hasRole(Role|iterable|string $role): bool
     {
+        if (is_iterable($role)) {
+            return $this->hasAllRoles($role);
+        }
+
         if (is_string($role)) {
             $role = Gatekeeper::roleModel()::where('name', $role)->first();
         }
 
         return $this->roles->contains($role);
+    }
+
+    /**
+     * Determine if the user has all the given roles.
+     *
+     * @param  iterable  $roles
+     * @return bool
+     */
+    public function hasAllRoles(iterable $roles): bool
+    {
+        foreach ($roles as $role) {
+            if (! $this->hasRole($role)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function allows(Permission|string $permission): bool

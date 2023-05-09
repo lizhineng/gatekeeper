@@ -82,6 +82,24 @@ class HasRolesTest extends FeatureTest
             'role name' => [
                 fn () => Role::create(['name' => 'editor'])->name,
             ],
+            'multiple role models' => [
+                fn () => [
+                    Role::create(['name' => 'admin']),
+                    Role::create(['name' => 'editor']),
+                ],
+            ],
+            'multiple role names' => [
+                fn () => [
+                    Role::create(['name' => 'admin'])->name,
+                    Role::create(['name' => 'editor'])->name,
+                ],
+            ],
+            'multiple roles' => [
+                fn () => [
+                    Role::create(['name' => 'admin']),
+                    Role::create(['name' => 'editor'])->name,
+                ],
+            ],
         ];
     }
 }
