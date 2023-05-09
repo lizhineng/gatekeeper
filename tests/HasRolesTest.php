@@ -71,6 +71,9 @@ class HasRolesTest extends FeatureTest
             'role model' => [
                 fn () => Role::create(['name' => 'editor']),
             ],
+            'role name' => [
+                fn () => Role::create(['name' => 'editor'])->name,
+            ],
         ];
     }
 }

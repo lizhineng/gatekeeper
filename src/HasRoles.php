@@ -3,6 +3,7 @@
 namespace Zhineng\Gatekeeper;
 
 use Illuminate\Database\Eloquent\Builder;
+use Zhineng\Gatekeeper\Facades\Gatekeeper;
 use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
 
@@ -27,8 +28,12 @@ trait HasRoles
         return $query->whereHas('roles', fn ($query) => $query->whereKey($permission->roles->pluck('id')));
     }
 
-    public function assignRole(Role $role): self
+    public function assignRole(Role|string $role): self
     {
+        if (is_string($role)) {
+            $role = Gatekeeper::roleModel()::where('name', $role)->first();
+        }
+
         $this->roles()->attach($role);
 
         return $this;
@@ -41,8 +46,12 @@ trait HasRoles
         return $this;
     }
 
-    public function hasRole(Role $role): bool
+    public function hasRole(Role|string $role): bool
     {
+        if (is_string($role)) {
+            $role = Gatekeeper::roleModel()::where('name', $role)->first();
+        }
+
         return $this->roles->contains($role);
     }
 
