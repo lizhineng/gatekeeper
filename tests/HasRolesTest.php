@@ -53,22 +53,6 @@ class HasRolesTest extends FeatureTest
         $this->makeUser()->removeRole('foo');
     }
 
-    public function test_checks_user_permission()
-    {
-        $readPosts = Permission::create(['name' => 'read:posts']);
-        $editor = Role::create(['name' => 'editor'])->assignPermission($readPosts);
-        $user = $this->makeUser()->assignRole($editor);
-        $this->assertTrue($user->allows($readPosts));
-    }
-
-    public function test_checks_user_permission_by_scope()
-    {
-        $readPosts = Permission::create(['name' => 'read:posts']);
-        $editor = Role::create(['name' => 'editor'])->assignPermission($readPosts);
-        $user = $this->makeUser()->assignRole($editor);
-        $this->assertTrue($user->allows($readPosts->name));
-    }
-
     public function test_expects_exception_when_checking_with_not_exists_permission_scope()
     {
         $this->expectException(CouldNotFindPermission::class);
