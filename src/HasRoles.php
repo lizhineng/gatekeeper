@@ -152,6 +152,13 @@ trait HasRoles
         return $this;
     }
 
+    /**
+     * Determine if entity has the given permission.
+     *
+     * @param  Permission|string  $permission
+     * @return bool
+     * @throws Exceptions\CouldNotFindPermission
+     */
     public function allows(Permission|string $permission): bool
     {
         if (is_string($permission)) {
