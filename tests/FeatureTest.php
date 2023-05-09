@@ -65,12 +65,12 @@ abstract class FeatureTest extends TestCase
 
     protected function registerGatekeeper()
     {
-        if ($this->gatekeeper) {
-            return;
-        }
+        $container = Container::getInstance();
 
         $this->gatekeeper = new Gatekeeper;
         $this->gatekeeper->bootEloquent();
+
+        $container->singleton('gatekeeper', fn () => $this->gatekeeper);
     }
 
     protected function migrate(): void
