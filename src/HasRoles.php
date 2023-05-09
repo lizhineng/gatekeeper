@@ -55,9 +55,28 @@ trait HasRoles
         return $this;
     }
 
-    public function removeRole(Role $role): self
+    /**
+     * Remove roles from the entity.
+     *
+     * @param  Role|iterable|string  $roles
+     * @return $this
+     * @throws CouldNotFindRole
+     */
+    public function removeRole(Role|iterable|string $roles): self
     {
-        $this->roles()->detach($role);
+        $roles = is_iterable($roles) ? $roles : [$roles];
+
+        $ids = [];
+
+        foreach ($roles as $role) {
+            if (is_string($role)) {
+                $role = Gatekeeper::roleModel()::where('name', $role)->first() ?: throw CouldNotFindRole::byName($role);
+            }
+
+            $ids[] = $role->getKey();
+        }
+
+        $this->roles()->detach($ids);
 
         return $this;
     }

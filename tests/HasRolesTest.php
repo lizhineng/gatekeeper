@@ -30,15 +30,20 @@ class HasRolesTest extends FeatureTest
         $this->makeUser()->assignRole('foo');
     }
 
-    public function test_removes_user_from_role()
+    /**
+     * @dataProvider provides_roles
+     */
+    public function test_removes_role_from_user($getRoles)
     {
-        $editor = Role::create(['name' => 'editor']);
+        $roles = $getRoles();
 
-        $user = $this->makeUser()
-            ->assignRole($editor)
-            ->removeRole($editor);
+        $user = $this->makeUser();
 
-        $this->assertFalse($user->hasRole($editor));
+        $user->assignRole($roles);
+        $this->assertTrue($user->hasRole($roles));
+
+        $user->removeRole($roles);
+        $this->assertFalse($user->fresh()->hasRole($roles));
     }
 
     public function test_checks_user_permission()
