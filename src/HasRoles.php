@@ -15,6 +15,11 @@ trait HasRoles
         return $this->morphToMany(Role::class, 'assignable', 'assigned_roles');
     }
 
+    public function permissions()
+    {
+        return $this->morphToMany(Permission::class, 'assignable', 'assigned_permissions');
+    }
+
     public function scopeRole(Builder $query, Role $role): Builder
     {
         return $query->whereHas('roles', fn ($query) => $query->whereKey($role->getKey()));
@@ -134,12 +139,48 @@ trait HasRoles
         return false;
     }
 
+    /**
+     * Assign permission to the entity.
+     *
+     * @param  Permission  $permission
+     * @return $this
+     */
+    public function assignPermission(Permission $permission): self
+    {
+        $this->permissions()->attach($permission->getKey());
+
+        return $this;
+    }
+
     public function allows(Permission|string $permission): bool
     {
         if (is_string($permission)) {
             $permission = Permission::gatekeeper()->permission($permission);
         }
 
+        return $this->allowsThroughDirectPermission($permission)
+            || $this->allowsThroughRole($permission);
+    }
+
+    /**
+     * Determine if the entity allows the given permission through direct permission.
+     *
+     * @param  Permission  $permission
+     * @return bool
+     */
+    public function allowsThroughDirectPermission(Permission $permission): bool
+    {
+        return $this->permissions->contains($permission);
+    }
+
+    /**
+     * Determine if the entity allows the given permission through role.
+     *
+     * @param  Permission  $permission
+     * @return bool
+     */
+    public function allowsThroughRole(Permission $permission): bool
+    {
         return $permission->roles->intersect($this->roles)->isNotEmpty();
     }
 

@@ -83,6 +83,15 @@ class HasRolesTest extends FeatureTest
         $this->assertFalse($user->hasAnyRoles(['foo']));
     }
 
+    public function test_assigns_permission_directly_to_user()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+        $user = $this->makeUser();
+        $this->assertFalse($user->allows($readPosts));
+        $user->assignPermission($readPosts);
+        $this->assertTrue($user->fresh()->allows($readPosts));
+    }
+
     public function test_expects_exception_when_checking_with_not_exists_permission_scope()
     {
         $this->expectException(CouldNotFindPermission::class);
