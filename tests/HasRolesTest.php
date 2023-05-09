@@ -53,6 +53,18 @@ class HasRolesTest extends FeatureTest
         $this->makeUser()->removeRole('foo');
     }
 
+    public function test_has_all_roles_checking()
+    {
+        $user = $this->makeUser();
+        $admin = Role::create(['name' => 'admin']);
+        $editor = Role::create(['name' => 'editor']);
+        $this->assertFalse($user->hasAllRoles([$admin, $editor]));
+        $user->assignRole($admin);
+        $this->assertFalse($user->fresh()->hasAllRoles([$admin, $editor]));
+        $user->assignRole($editor);
+        $this->assertTrue($user->fresh()->hasAllRoles([$admin, $editor]));
+    }
+
     public function test_has_any_roles_checking()
     {
         $user = $this->makeUser();
