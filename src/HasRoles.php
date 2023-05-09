@@ -97,7 +97,7 @@ trait HasRoles
             $role = Gatekeeper::roleModel()::where('name', $role)->first();
         }
 
-        return $this->roles->contains($role);
+        return $role ? $this->roles->contains($role) : false;
     }
 
     /**
