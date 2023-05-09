@@ -117,6 +117,23 @@ trait HasRoles
         return true;
     }
 
+    /**
+     * Determine if the entity has any of the given roles.
+     *
+     * @param  iterable  $roles
+     * @return bool
+     */
+    public function hasAnyRoles(iterable $roles): bool
+    {
+        foreach ($roles as $role) {
+            if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function allows(Permission|string $permission): bool
     {
         if (is_string($permission)) {
