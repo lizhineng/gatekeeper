@@ -150,6 +150,24 @@ class HasRolesTest extends FeatureTest
             'permission name' => [
                 fn () => Permission::create(['name' => 'read:posts'])->name,
             ],
+            'multiple permission models' => [
+                fn () => [
+                    Permission::create(['name' => 'read:posts']),
+                    Permission::create(['name' => 'write:posts']),
+                ],
+            ],
+            'multiple permission names' => [
+                fn () => [
+                    Permission::create(['name' => 'read:posts'])->name,
+                    Permission::create(['name' => 'write:posts'])->name,
+                ],
+            ],
+            'multiple permissions' => [
+                fn () => [
+                    Permission::create(['name' => 'read:posts']),
+                    Permission::create(['name' => 'write:posts'])->name,
+                ],
+            ],
         ];
     }
 }

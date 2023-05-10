@@ -26,16 +26,24 @@ trait HasPermissions
     /**
      * Assign permission to the entity.
      *
-     * @param  Permission|string  $permission
+     * @param  Permission|iterable|string  $permissions
      * @return $this
      */
-    public function assignPermission(Permission|string $permission): self
+    public function assignPermission(Permission|iterable|string $permissions): self
     {
-        if (is_string($permission)) {
-            $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: throw CouldNotFindPermission::byName($permission);
+        $permissions = is_iterable($permissions) ? $permissions : [$permissions];
+
+        $ids = [];
+
+        foreach ($permissions as $permission) {
+            if (is_string($permission)) {
+                $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: throw CouldNotFindPermission::byName($permission);
+            }
+
+            $ids[] = $permission->getKey();
         }
 
-        $this->permissions()->attach($permission->getKey());
+        $this->permissions()->attach($ids);
 
         return $this;
     }
@@ -43,14 +51,22 @@ trait HasPermissions
     /**
      * Determine if the entity has the given permission.
      *
-     * @param  Permission|string  $permission
+     * @param  Permission|iterable|string  $permission
      * @return bool
      * @throws CouldNotFindPermission
      */
-    public function allows(Permission|string $permission): bool
+    public function allows(Permission|iterable|string $permission): bool
     {
+        if (is_iterable($permission)) {
+            return $this->allowsAll($permission);
+        }
+
         if (is_string($permission)) {
-            $permission = Permission::gatekeeper()->permission($permission);
+            $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: false;
+        }
+
+        if ($permission === false) {
+            return false;
         }
 
         return $this->allowsThroughDirectPermission($permission)
@@ -77,6 +93,24 @@ trait HasPermissions
     public function allowsThroughRole(Permission $permission): bool
     {
         return $permission->roles->intersect($this->roles)->isNotEmpty();
+    }
+
+    /**
+     * Determine if the entity has all the given permissions.
+     *
+     * @param  iterable  $permissions
+     * @return bool
+     * @throws CouldNotFindPermission
+     */
+    public function allowsAll(iterable $permissions): bool
+    {
+        foreach ($permissions as $permission) {
+            if (! $this->allows($permission)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function allowsAny(array $permissions): bool
