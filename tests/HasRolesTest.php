@@ -83,13 +83,16 @@ class HasRolesTest extends FeatureTest
         $this->assertFalse($user->hasAnyRoles(['foo']));
     }
 
-    public function test_assigns_permission_directly_to_user()
+    /**
+     * @dataProvider provides_permissions
+     */
+    public function test_assigns_permission_directly_to_user($getPermissions)
     {
-        $readPosts = Permission::create(['name' => 'read:posts']);
+        $permissions = $getPermissions();
         $user = $this->makeUser();
-        $this->assertFalse($user->allows($readPosts));
-        $user->assignPermission($readPosts);
-        $this->assertTrue($user->fresh()->allows($readPosts));
+        $this->assertFalse($user->allows($permissions));
+        $user->assignPermission($permissions);
+        $this->assertTrue($user->fresh()->allows($permissions));
     }
 
     public function test_expects_exception_when_checking_with_not_exists_permission_scope()
@@ -134,6 +137,15 @@ class HasRolesTest extends FeatureTest
                     Role::create(['name' => 'admin']),
                     Role::create(['name' => 'editor'])->name,
                 ],
+            ],
+        ];
+    }
+
+    public function provides_permissions()
+    {
+        return [
+            'permission model' => [
+                fn () => Permission::create(['name' => 'read:posts']),
             ],
         ];
     }
