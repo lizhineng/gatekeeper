@@ -147,6 +147,9 @@ class HasRolesTest extends FeatureTest
             'permission model' => [
                 fn () => Permission::create(['name' => 'read:posts']),
             ],
+            'permission name' => [
+                fn () => Permission::create(['name' => 'read:posts'])->name,
+            ],
         ];
     }
 }

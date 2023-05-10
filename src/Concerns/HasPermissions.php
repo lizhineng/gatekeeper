@@ -4,6 +4,7 @@ namespace Zhineng\Gatekeeper\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Zhineng\Gatekeeper\Exceptions\CouldNotFindPermission;
+use Zhineng\Gatekeeper\Facades\Gatekeeper;
 use Zhineng\Gatekeeper\Models\Permission;
 
 trait HasPermissions
@@ -25,11 +26,15 @@ trait HasPermissions
     /**
      * Assign permission to the entity.
      *
-     * @param  Permission  $permission
+     * @param  Permission|string  $permission
      * @return $this
      */
-    public function assignPermission(Permission $permission): self
+    public function assignPermission(Permission|string $permission): self
     {
+        if (is_string($permission)) {
+            $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: throw CouldNotFindPermission::byName($permission);
+        }
+
         $this->permissions()->attach($permission->getKey());
 
         return $this;
