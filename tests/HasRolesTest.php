@@ -95,6 +95,19 @@ class HasRolesTest extends FeatureTest
         $this->assertTrue($user->fresh()->allows($permissions));
     }
 
+    /**
+     * @dataProvider provides_permissions
+     */
+    public function test_removes_permission_from_user($getPermissions)
+    {
+        $permissions = $getPermissions();
+        $user = $this->makeUser();
+        $user->assignPermission($permissions);
+        $this->assertTrue($user->allows($permissions));
+        $user->removePermission($permissions);
+        $this->assertFalse($user->fresh()->allows($permissions));
+    }
+
     public function test_checks_user_has_any_permissions()
     {
         $readPosts = Permission::create(['name' => 'read:posts']);

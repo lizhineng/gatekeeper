@@ -49,6 +49,32 @@ trait HasPermissions
     }
 
     /**
+     * Remove permission from the entity.
+     *
+     * @param  Permission|iterable|string  $permissions
+     * @return $this
+     * @throws CouldNotFindPermission
+     */
+    public function removePermission(Permission|iterable|string $permissions): self
+    {
+        $permissions = is_iterable($permissions) ? $permissions : [$permissions];
+
+        $ids = [];
+
+        foreach ($permissions as $permission) {
+            if (is_string($permission)) {
+                $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: throw CouldNotFindPermission::byName($permission);
+            }
+
+            $ids[] = $permission->getKey();
+        }
+
+        $this->permissions()->detach($ids);
+
+        return $this;
+    }
+
+    /**
      * Determine if the entity has the given permission.
      *
      * @param  Permission|iterable|string  $permission
