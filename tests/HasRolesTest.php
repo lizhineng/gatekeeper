@@ -86,7 +86,7 @@ class HasRolesTest extends FeatureTest
     /**
      * @dataProvider provides_permissions
      */
-    public function test_assigns_permission_directly_to_user($getPermissions)
+    public function test_assigns_permission_to_user($getPermissions)
     {
         $permissions = $getPermissions();
         $user = $this->makeUser();
