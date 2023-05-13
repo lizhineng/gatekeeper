@@ -108,6 +108,18 @@ class HasRolesTest extends FeatureTest
         $this->assertFalse($user->fresh()->allows($permissions));
     }
 
+    public function test_permission_could_be_obtained_from_direct_assignment()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+        $user = $this->makeUser();
+        $this->assertFalse($user->allows($readPosts));
+        $this->assertFalse($user->allowsThroughDirectPermission($readPosts));
+        $user->assignPermission($readPosts);
+        $user->refresh();
+        $this->assertTrue($user->allows($readPosts));
+        $this->assertTrue($user->allowsThroughDirectPermission($readPosts));
+    }
+
     public function test_checks_user_has_any_permissions()
     {
         $readPosts = Permission::create(['name' => 'read:posts']);
