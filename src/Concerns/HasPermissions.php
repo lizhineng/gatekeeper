@@ -113,6 +113,12 @@ trait HasPermissions
         return true;
     }
 
+    /**
+     * Determine if entity has any of the given permissions.
+     *
+     * @param  array  $permissions
+     * @return bool
+     */
     public function allowsAny(array $permissions): bool
     {
         return collect($permissions)->some(fn ($permission) => $this->allows($permission));
