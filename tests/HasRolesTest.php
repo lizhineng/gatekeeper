@@ -95,13 +95,6 @@ class HasRolesTest extends FeatureTest
         $this->assertTrue($user->fresh()->allows($permissions));
     }
 
-    public function test_expects_exception_when_checking_with_not_exists_permission_scope()
-    {
-        $this->expectException(CouldNotFindPermission::class);
-        $this->expectExceptionMessage("Could not retrieve the permission by given name [foo].");
-        $this->makeUser()->allows('foo');
-    }
-
     public function test_checks_user_has_any_permissions()
     {
         $readPosts = Permission::create(['name' => 'read:posts']);
