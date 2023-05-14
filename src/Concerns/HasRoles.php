@@ -43,7 +43,7 @@ trait HasRoles
      * Remove roles from the entity.
      *
      * @param  Role|iterable|string  $roles
-     * @return HasRolesAndPermissions
+     * @return $this
      * @throws CouldNotFindRole
      */
     public function removeRole(Role|iterable|string $roles): self
@@ -122,7 +122,7 @@ trait HasRoles
      * Assign roles to the entity.
      *
      * @param  Role|iterable|string  $roles
-     * @return HasRolesAndPermissions
+     * @return $this
      * @throws CouldNotFindRole
      */
     public function assignRole(Role|iterable|string $roles): self
