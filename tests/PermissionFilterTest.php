@@ -3,30 +3,30 @@
 namespace Zhineng\Gatekeeper\Tests;
 
 use Illuminate\Database\Eloquent\Collection;
-use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
 use Zhineng\Gatekeeper\Tests\Fixtures\User;
 
 class PermissionFilterTest extends FeatureTest
 {
-    public function test_scopes_users_by_permission()
+    use ProvidesPermissions;
+
+    /**
+     * @dataProvider provides_permissions
+     */
+    public function test_filters_entities_by_permission($getPermissions)
     {
+        $permissions = $getPermissions();
+
         $editor = Role::create(['name' => 'editor']);
-        $readPosts = Permission::create(['name' => 'read:posts']);
-        $editor->assignPermission($readPosts);
+        $editor->assignPermission($permissions);
 
         $user1 = $this->makeUser()->assignRole($editor);
         $user2 = $this->makeUser();
 
-        $this->assertInstanceOf(Collection::class, $users = User::permission($readPosts)->get());
-        $this->assertTrue($users->contains($user1));
-        $this->assertFalse($users->contains($user2));
-    }
-
-    public function test_scopes_users_by_permission_name()
-    {
-        $readPosts = Permission::create(['name' => 'read:posts']);
-
-        $this->assertInstanceOf(Collection::class, User::permission($readPosts->name)->get());
+        $result = User::permission($permissions)->get();
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertCount(1, $result);
+        $this->assertTrue($result->contains($user1));
+        $this->assertFalse($result->contains($user2));
     }
 }

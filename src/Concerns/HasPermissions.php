@@ -14,13 +14,29 @@ trait HasPermissions
         return $this->morphToMany(Gatekeeper::permissionModel(), 'assignable', 'assigned_permissions');
     }
 
-    public function scopePermission(Builder $query, Permission|string $permission): Builder
+    /**
+     * Scope a query to only include entities with the given permission.
+     *
+     * @param  Builder  $query
+     * @param  Permission|iterable|string  $permissions
+     * @return void
+     * @throws CouldNotFindPermission
+     */
+    public function scopePermission(Builder $query, Permission|iterable|string $permissions): void
     {
-        if (is_string($permission)) {
-            $permission = Permission::gatekeeper()->permission($permission);
+        $permissions = is_iterable($permissions) ? $permissions : [$permissions];
+
+        $ids = [];
+
+        foreach ($permissions as $permission) {
+            if (is_string($permission)) {
+                $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: throw CouldNotFindPermission::byName($permission);
+            }
+
+            $ids[] = $permission->roles->pluck('id');
         }
 
-        return $query->whereHas('roles', fn ($query) => $query->whereKey($permission->roles->pluck('id')));
+        $query->whereHas('roles', fn ($query) => $query->whereKey($ids));
     }
 
     /**
