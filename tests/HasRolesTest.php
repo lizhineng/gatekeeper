@@ -9,6 +9,8 @@ use Zhineng\Gatekeeper\Models\Role;
 
 class HasRolesTest extends FeatureTest
 {
+    use ProvidesRoles, ProvidesPermissions;
+
     /**
      * @dataProvider provides_roles
      */
@@ -163,65 +165,5 @@ class HasRolesTest extends FeatureTest
         $this->assertFalse($user->allowsAny([$readPosts, $writePosts]));
         $user->assignPermission($readPosts);
         $this->assertTrue($user->fresh()->allowsAny([$readPosts, $writePosts]));
-    }
-
-    public function provides_roles()
-    {
-        return [
-            'role model' => [
-                fn () => Role::create(['name' => 'editor']),
-            ],
-            'role name' => [
-                fn () => Role::create(['name' => 'editor'])->name,
-            ],
-            'multiple role models' => [
-                fn () => [
-                    Role::create(['name' => 'admin']),
-                    Role::create(['name' => 'editor']),
-                ],
-            ],
-            'multiple role names' => [
-                fn () => [
-                    Role::create(['name' => 'admin'])->name,
-                    Role::create(['name' => 'editor'])->name,
-                ],
-            ],
-            'multiple roles' => [
-                fn () => [
-                    Role::create(['name' => 'admin']),
-                    Role::create(['name' => 'editor'])->name,
-                ],
-            ],
-        ];
-    }
-
-    public function provides_permissions()
-    {
-        return [
-            'permission model' => [
-                fn () => Permission::create(['name' => 'read:posts']),
-            ],
-            'permission name' => [
-                fn () => Permission::create(['name' => 'read:posts'])->name,
-            ],
-            'multiple permission models' => [
-                fn () => [
-                    Permission::create(['name' => 'read:posts']),
-                    Permission::create(['name' => 'write:posts']),
-                ],
-            ],
-            'multiple permission names' => [
-                fn () => [
-                    Permission::create(['name' => 'read:posts'])->name,
-                    Permission::create(['name' => 'write:posts'])->name,
-                ],
-            ],
-            'multiple permissions' => [
-                fn () => [
-                    Permission::create(['name' => 'read:posts']),
-                    Permission::create(['name' => 'write:posts'])->name,
-                ],
-            ],
-        ];
     }
 }
