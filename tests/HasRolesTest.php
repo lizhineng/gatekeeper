@@ -144,13 +144,25 @@ class HasRolesTest extends FeatureTest
         $this->assertTrue($user->fresh()->allowsAll([$readPosts, $writePosts]));
     }
 
-    public function test_checks_user_has_any_permissions()
+    public function test_allows_any_permissions_checking_through_role()
     {
         $readPosts = Permission::create(['name' => 'read:posts']);
         $writePosts = Permission::create(['name' => 'write:posts']);
         $editor = Role::create(['name' => 'editor'])->assignPermission($readPosts);
-        $user = $this->makeUser()->assignRole($editor);
-        $this->assertTrue($user->allowsAny([$readPosts, $writePosts]));
+        $user = $this->makeUser();
+        $this->assertFalse($user->allowsAny([$readPosts, $writePosts]));
+        $user->assignRole($editor);
+        $this->assertTrue($user->fresh()->allowsAny([$readPosts, $writePosts]));
+    }
+
+    public function test_allows_any_permissions_checking_through_direct_assignment()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+        $writePosts = Permission::create(['name' => 'write:posts']);
+        $user = $this->makeUser();
+        $this->assertFalse($user->allowsAny([$readPosts, $writePosts]));
+        $user->assignPermission($readPosts);
+        $this->assertTrue($user->fresh()->allowsAny([$readPosts, $writePosts]));
     }
 
     public function provides_roles()
