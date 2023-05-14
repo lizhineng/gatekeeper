@@ -7,7 +7,7 @@ use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
 use Zhineng\Gatekeeper\Tests\Fixtures\User;
 
-class PermissionScopeTest extends FeatureTest
+class PermissionFilterTest extends FeatureTest
 {
     public function test_scopes_users_by_permission()
     {
