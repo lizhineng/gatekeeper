@@ -115,11 +115,11 @@ class HasCapabilitiesTest extends FeatureTest
         $readPosts = Permission::create(['name' => 'read:posts']);
         $user = $this->makeUser();
         $this->assertFalse($user->allows($readPosts));
-        $this->assertFalse($user->allowsThroughDirectAssignment($readPosts));
+        $this->assertFalse($user->allowsViaDirectPermission($readPosts));
         $user->assignPermission($readPosts);
         $user->refresh();
         $this->assertTrue($user->allows($readPosts));
-        $this->assertTrue($user->allowsThroughDirectAssignment($readPosts));
+        $this->assertTrue($user->allowsViaDirectPermission($readPosts));
     }
 
     public function test_permission_could_be_obtained_from_role()
@@ -128,11 +128,11 @@ class HasCapabilitiesTest extends FeatureTest
         $editor = Role::create(['name' => 'editor'])->assignPermission($readPosts);
         $user = $this->makeUser();
         $this->assertFalse($user->allows($readPosts));
-        $this->assertFalse($user->allowsThroughRole($readPosts));
+        $this->assertFalse($user->allowsViaRole($readPosts));
         $user->assignRole($editor);
         $user->refresh();
         $this->assertTrue($user->allows($readPosts));
-        $this->assertTrue($user->allowsThroughRole($readPosts));
+        $this->assertTrue($user->allowsViaRole($readPosts));
     }
 
     public function test_allows_all_permissions_checking()

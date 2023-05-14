@@ -95,8 +95,8 @@ trait HasPermissions
             return false;
         }
 
-        return $this->allowsThroughDirectAssignment($permission)
-            || $this->allowsThroughRole($permission);
+        return $this->allowsViaDirectPermission($permission)
+            || $this->allowsViaRole($permission);
     }
 
     /**
@@ -105,7 +105,7 @@ trait HasPermissions
      * @param  Permission  $permission
      * @return bool
      */
-    public function allowsThroughDirectAssignment(Permission $permission): bool
+    public function allowsViaDirectPermission(Permission $permission): bool
     {
         return $this->permissions->contains($permission);
     }
@@ -116,7 +116,7 @@ trait HasPermissions
      * @param  Permission  $permission
      * @return bool
      */
-    public function allowsThroughRole(Permission $permission): bool
+    public function allowsViaRole(Permission $permission): bool
     {
         return $permission->roles->intersect($this->roles)->isNotEmpty();
     }
