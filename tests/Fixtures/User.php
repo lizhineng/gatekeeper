@@ -3,9 +3,9 @@
 namespace Zhineng\Gatekeeper\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
-use Zhineng\Gatekeeper\HasRoles;
+use Zhineng\Gatekeeper\HasCapabilities;
 
 class User extends Model
 {
-    use HasRoles;
+    use HasCapabilities;
 }

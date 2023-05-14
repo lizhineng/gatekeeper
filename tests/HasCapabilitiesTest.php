@@ -7,7 +7,7 @@ use Zhineng\Gatekeeper\Exceptions\CouldNotFindRole;
 use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
 
-class HasRolesTest extends FeatureTest
+class HasCapabilitiesTest extends FeatureTest
 {
     use ProvidesRoles, ProvidesPermissions;
 

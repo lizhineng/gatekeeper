@@ -1,17 +1,14 @@
 <?php
 
-namespace Zhineng\Gatekeeper;
+namespace Zhineng\Gatekeeper\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
-use Zhineng\Gatekeeper\Concerns\HasPermissions;
 use Zhineng\Gatekeeper\Exceptions\CouldNotFindRole;
 use Zhineng\Gatekeeper\Facades\Gatekeeper;
 use Zhineng\Gatekeeper\Models\Role;
 
 trait HasRoles
 {
-    use HasPermissions;
-
     public function roles()
     {
         return $this->morphToMany(Gatekeeper::roleModel(), 'assignable', 'assigned_roles');
@@ -19,40 +16,14 @@ trait HasRoles
 
     public function scopeRole(Builder $query, Role $role): Builder
     {
-        return $query->whereHas('roles', fn ($query) => $query->whereKey($role->getKey()));
-    }
-
-    /**
-     * Assign roles to the entity.
-     *
-     * @param  Role|iterable|string  $roles
-     * @return $this
-     * @throws CouldNotFindRole
-     */
-    public function assignRole(Role|iterable|string $roles): self
-    {
-        $roles = is_iterable($roles) ? $roles: [$roles];
-
-        $ids = [];
-
-        foreach ($roles as $role) {
-            if (is_string($role)) {
-                $role = Gatekeeper::roleModel()::where('name', $role)->first() ?: throw CouldNotFindRole::byName($role);
-            }
-
-            $ids[] = $role->getKey();
-        }
-
-        $this->roles()->attach($ids);
-
-        return $this;
+        return $query->whereHas('roles', fn($query) => $query->whereKey($role->getKey()));
     }
 
     /**
      * Remove roles from the entity.
      *
      * @param  Role|iterable|string  $roles
-     * @return $this
+     * @return HasRolesAndPermissions
      * @throws CouldNotFindRole
      */
     public function removeRole(Role|iterable|string $roles): self
@@ -102,7 +73,7 @@ trait HasRoles
     public function hasAllRoles(iterable $roles): bool
     {
         foreach ($roles as $role) {
-            if (! $this->hasRole($role)) {
+            if (!$this->hasRole($role)) {
                 return false;
             }
         }
@@ -125,5 +96,31 @@ trait HasRoles
         }
 
         return false;
+    }
+
+    /**
+     * Assign roles to the entity.
+     *
+     * @param  Role|iterable|string  $roles
+     * @return HasRolesAndPermissions
+     * @throws CouldNotFindRole
+     */
+    public function assignRole(Role|iterable|string $roles): self
+    {
+        $roles = is_iterable($roles) ? $roles : [$roles];
+
+        $ids = [];
+
+        foreach ($roles as $role) {
+            if (is_string($role)) {
+                $role = Gatekeeper::roleModel()::where('name', $role)->first() ?: throw CouldNotFindRole::byName($role);
+            }
+
+            $ids[] = $role->getKey();
+        }
+
+        $this->roles()->attach($ids);
+
+        return $this;
     }
 }
