@@ -14,9 +14,29 @@ trait HasRoles
         return $this->morphToMany(Gatekeeper::roleModel(), 'assignable', 'assigned_roles');
     }
 
-    public function scopeRole(Builder $query, Role $role): Builder
+    /**
+     * Scope a query to only include entities with the given role.
+     *
+     * @param  Builder  $query
+     * @param  Role|iterable|string  $roles
+     * @return void
+     * @throws CouldNotFindRole
+     */
+    public function scopeRole(Builder $query, Role|iterable|string $roles): void
     {
-        return $query->whereHas('roles', fn($query) => $query->whereKey($role->getKey()));
+        $roles = is_iterable($roles) ? $roles : [$roles];
+
+        $ids = [];
+
+        foreach ($roles as $role) {
+            if (is_string($role)) {
+                $role = Gatekeeper::roleModel()::where('name', $role)->first() ?: throw CouldNotFindRole::byName($role);
+            }
+
+            $ids[] = $role->getKey();
+        }
+
+        $query->whereHas('roles', fn ($query) => $query->whereKey($ids));
     }
 
     /**
