@@ -4,7 +4,6 @@ namespace Zhineng\Gatekeeper\Support;
 
 use Illuminate\Support\ServiceProvider;
 use Zhineng\Gatekeeper\Manager;
-use Zhineng\Gatekeeper\Models\Permission;
 
 class GatekeeperServiceProvider extends ServiceProvider
 {
@@ -12,8 +11,6 @@ class GatekeeperServiceProvider extends ServiceProvider
     {
         $this->configure();
         $this->offerPublishing();
-
-        Permission::setGatekeeper($this->app['gatekeeper']);
     }
 
     public function register()

@@ -68,7 +68,6 @@ abstract class FeatureTest extends TestCase
         $container = Container::getInstance();
 
         $this->gatekeeper = new Gatekeeper;
-        $this->gatekeeper->bootEloquent();
 
         $container->singleton('gatekeeper', fn () => $this->gatekeeper);
     }

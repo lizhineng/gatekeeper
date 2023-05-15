@@ -72,11 +72,6 @@ class Manager
         return $this->roleModel;
     }
 
-    public function bootEloquent()
-    {
-        $this->permissionModel()::setGatekeeper($this);
-    }
-
     public function permission(Permission|string $permission): Permission
     {
         if (is_string($permission)) {
