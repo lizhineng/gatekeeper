@@ -44,4 +44,20 @@ class PermissionFilterTest extends FeatureTest
         $this->assertTrue($result->contains($user1));
         $this->assertFalse($result->contains($user2));
     }
+
+    public function test_filters_roles_by_permission()
+    {
+        $editor = Role::create(['name' => 'editor']);
+        $admin = Role::create(['name' => 'admin']);
+        $readPosts = Permission::create(['name' => 'read:posts']);
+        $editDashboard = Permission::create(['name' => 'edit:dashboard']);
+        $editor->assignPermission($readPosts);
+        $admin->assignPermission($editDashboard);
+
+        $result = Role::permission($editDashboard)->get();
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertCount(1, $result);
+        $this->assertTrue($result->contains($admin));
+        $this->assertFalse($result->contains($editor));
+    }
 }
