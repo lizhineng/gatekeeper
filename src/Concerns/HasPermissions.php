@@ -116,7 +116,7 @@ trait HasPermissions
             return false;
         }
 
-        return $this->allowsViaDirectPermission($permission)
+        return $this->allowsViaDirectAssignment($permission)
             || $this->allowsViaRole($permission);
     }
 
@@ -126,7 +126,7 @@ trait HasPermissions
      * @param  Permission  $permission
      * @return bool
      */
-    public function allowsViaDirectPermission(Permission $permission): bool
+    public function allowsViaDirectAssignment(Permission $permission): bool
     {
         return $this->permissions->contains($permission);
     }
