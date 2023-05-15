@@ -9,6 +9,11 @@ use Zhineng\Gatekeeper\Models\Role;
 
 trait HasRoles
 {
+    /**
+     * Roles of the entity.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
     public function roles()
     {
         return $this->morphToMany(Gatekeeper::roleModel(), 'assignable', 'assigned_roles');

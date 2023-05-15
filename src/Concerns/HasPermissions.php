@@ -9,6 +9,11 @@ use Zhineng\Gatekeeper\Models\Permission;
 
 trait HasPermissions
 {
+    /**
+     * Directly-assigned permissions of the entity.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
     public function permissions()
     {
         return $this->morphToMany(Gatekeeper::permissionModel(), 'assignable', 'assigned_permissions');
