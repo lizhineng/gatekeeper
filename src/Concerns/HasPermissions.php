@@ -31,22 +31,17 @@ trait HasPermissions
     {
         $permissions = is_iterable($permissions) ? $permissions : [$permissions];
 
-        $permissionIds = [];
-        $roleIds = [];
+        $ids = [];
 
         foreach ($permissions as $permission) {
             if (is_string($permission)) {
                 $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: throw CouldNotFindPermission::byName($permission);
             }
 
-            $permissionIds[] = $permission->id;
-            $roleIds[] = $permission->roles->pluck('id');
+            $ids[] = $permission->getKey();
         }
 
-        $query->where(function (Builder $query) use ($permissionIds, $roleIds) {
-            $query->whereHas('permissions', fn ($query) => $query->whereKey($permissionIds))
-                ->orWhereHas('roles', fn ($query) => $query->whereKey($roleIds));
-        });
+        $query->whereHas('permissions', fn ($query) => $query->whereKey($ids));
     }
 
     /**
@@ -121,30 +116,7 @@ trait HasPermissions
             return false;
         }
 
-        return $this->allowsViaDirectAssignment($permission)
-            || $this->allowsViaRole($permission);
-    }
-
-    /**
-     * Determine if the entity allows the given permission via direct permission.
-     *
-     * @param  Permission  $permission
-     * @return bool
-     */
-    public function allowsViaDirectAssignment(Permission $permission): bool
-    {
         return $this->permissions->contains($permission);
-    }
-
-    /**
-     * Determine if the entity allows the given permission via role.
-     *
-     * @param  Permission  $permission
-     * @return bool
-     */
-    public function allowsViaRole(Permission $permission): bool
-    {
-        return $permission->roles->intersect($this->roles)->isNotEmpty();
     }
 
     /**
