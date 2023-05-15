@@ -26,17 +26,22 @@ trait HasPermissions
     {
         $permissions = is_iterable($permissions) ? $permissions : [$permissions];
 
-        $ids = [];
+        $permissionIds = [];
+        $roleIds = [];
 
         foreach ($permissions as $permission) {
             if (is_string($permission)) {
                 $permission = Gatekeeper::permissionModel()::where('name', $permission)->first() ?: throw CouldNotFindPermission::byName($permission);
             }
 
-            $ids[] = $permission->roles->pluck('id');
+            $permissionIds[] = $permission->id;
+            $roleIds[] = $permission->roles->pluck('id');
         }
 
-        $query->whereHas('roles', fn ($query) => $query->whereKey($ids));
+        $query->where(function (Builder $query) use ($permissionIds, $roleIds) {
+            $query->whereHas('permissions', fn ($query) => $query->whereKey($permissionIds))
+                ->orWhereHas('roles', fn ($query) => $query->whereKey($roleIds));
+        });
     }
 
     /**

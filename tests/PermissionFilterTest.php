@@ -3,6 +3,7 @@
 namespace Zhineng\Gatekeeper\Tests;
 
 use Illuminate\Database\Eloquent\Collection;
+use Zhineng\Gatekeeper\Models\Permission;
 use Zhineng\Gatekeeper\Models\Role;
 use Zhineng\Gatekeeper\Tests\Fixtures\User;
 
@@ -13,7 +14,7 @@ class PermissionFilterTest extends FeatureTest
     /**
      * @dataProvider provides_permissions
      */
-    public function test_filters_entities_by_permission($getPermissions)
+    public function test_filters_entities_by_permission_role($getPermissions)
     {
         $permissions = $getPermissions();
 
@@ -24,6 +25,20 @@ class PermissionFilterTest extends FeatureTest
         $user2 = $this->makeUser();
 
         $result = User::permission($permissions)->get();
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertCount(1, $result);
+        $this->assertTrue($result->contains($user1));
+        $this->assertFalse($result->contains($user2));
+    }
+
+    public function test_filters_entities_by_permission_direct_assignment()
+    {
+        $readPosts = Permission::create(['name' => 'read:posts']);
+
+        $user1 = $this->makeUser()->assignPermission($readPosts);
+        $user2 = $this->makeUser();
+
+        $result = User::permission($readPosts)->get();
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertCount(1, $result);
         $this->assertTrue($result->contains($user1));
