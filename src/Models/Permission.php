@@ -7,6 +7,13 @@ use Zhineng\Gatekeeper\Facades\Gatekeeper;
 
 class Permission extends Model
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'permissions';
+
     protected $guarded = [];
 
     public function roles()

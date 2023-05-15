@@ -20,8 +20,6 @@ abstract class FeatureTest extends TestCase
 {
     protected static ?Dispatcher $dispatcher = null;
 
-    protected ?Gatekeeper $gatekeeper = null;
-
     public function setUp(): void
     {
         $this->registerContainer();
@@ -67,9 +65,9 @@ abstract class FeatureTest extends TestCase
     {
         $container = Container::getInstance();
 
-        $this->gatekeeper = new Gatekeeper;
+        $gatekeeper = new Gatekeeper;
 
-        $container->singleton('gatekeeper', fn () => $this->gatekeeper);
+        $container->singleton('gatekeeper', fn () => $gatekeeper);
     }
 
     protected function migrate(): void

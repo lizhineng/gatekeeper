@@ -9,5 +9,12 @@ class Role extends Model
 {
     use HasPermissions;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'roles';
+
     protected $guarded = [];
 }

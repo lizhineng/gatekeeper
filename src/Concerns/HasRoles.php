@@ -16,7 +16,7 @@ trait HasRoles
      */
     public function roles()
     {
-        return $this->morphToMany(Gatekeeper::roleModel(), 'assignable', 'assigned_roles');
+        return $this->morphToMany(Gatekeeper::roleModel(), 'assignable', 'assigned_roles', 'assignable_id', 'role_id');
     }
 
     /**

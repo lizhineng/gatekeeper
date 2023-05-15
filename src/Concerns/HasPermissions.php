@@ -16,7 +16,7 @@ trait HasPermissions
      */
     public function permissions()
     {
-        return $this->morphToMany(Gatekeeper::permissionModel(), 'assignable', 'assigned_permissions');
+        return $this->morphToMany(Gatekeeper::permissionModel(), 'assignable', 'assigned_permissions', 'assignable_id', 'permission_id');
     }
 
     /**
