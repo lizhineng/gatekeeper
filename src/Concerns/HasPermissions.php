@@ -121,7 +121,7 @@ trait HasPermissions
     }
 
     /**
-     * Determine if the entity allows the given permission through direct permission.
+     * Determine if the entity allows the given permission via direct permission.
      *
      * @param  Permission  $permission
      * @return bool
@@ -132,7 +132,7 @@ trait HasPermissions
     }
 
     /**
-     * Determine if the entity allows the given permission through role.
+     * Determine if the entity allows the given permission via role.
      *
      * @param  Permission  $permission
      * @return bool
